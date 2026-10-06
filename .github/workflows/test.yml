@@ -26,6 +26,14 @@ jobs:
           python-version: '3.12'
       - run: pip install -r tests/requirements.txt
       - run: python -m playwright install --with-deps ${{ matrix.browser }}
+      - name: Provide an audio output device on the headless Firefox runner
+        if: matrix.browser == 'firefox'
+        run: |
+          sudo apt-get install -y pulseaudio
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=orbit_test
+          pactl set-default-sink orbit_test
+          pactl info
       - run: python tests/browser.py --browser ${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
         if: always()
