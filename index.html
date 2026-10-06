@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0c100f">
+  <meta name="description" content="ORBIT. Ditt tangentbord är ett instrument. Spela melodier, ackord och bas, hitta nya klanger och fånga en loop. Inget att installera.">
+  <title>ORBIT — ditt tangentbord, ett instrument</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230c100f'/%3E%3Cellipse cx='32' cy='32' rx='23' ry='12' transform='rotate(-35 32 32)' fill='none' stroke='%23e9b588' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23e9b588'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="ORBIT startsida"><svg viewBox="0 0 56 42" aria-hidden="true"><ellipse cx="28" cy="21" rx="25" ry="12" transform="rotate(-30 28 21)"/><circle cx="28" cy="21" r="4"/></svg><span>ORBIT<span class="brand-dot">.</span></span></a>
+      <div class="top-caption">ETT TANGENTBORD. OÄNDLIGA OMVÄGAR.</div>
+      <button id="panic" class="quiet panic" title="Tysta allt, även loop och effekter (Escape)"><span class="status-dot"></span><span id="audioStatus">Redo att väckas</span><kbd>esc</kbd></button>
+    </header>
+    <main>
+      <section class="instrument" aria-label="ORBIT musikinstrument">
+        <div class="instrument-toolbar">
+          <div class="tonality">
+            <label>TONART<select id="root" aria-label="Grundton"></select></label>
+            <label>SKALA<select id="scale" aria-label="Skala"></select></label>
+            <span class="safe-label" id="safeLabel"><span></span>ALLA TONER HÖR IHOP</span>
+          </div>
+          <label class="master-volume">VOLYM<input id="volume" type="range" min="0" max="100" value="72" aria-label="Volym"></label>
+        </div>
+        <div class="sound-stage">
+          <div class="sound-identity">
+            <div class="eyebrow"><span class="tiny-line"></span><span id="soundKind">WARM ANALOG</span><span id="presetIndex">01 / 08</span></div>
+            <h1 id="presetName">Ember</h1>
+            <p id="presetDescription">Mjuka kanter. En liten elektrisk glöd.</p>
+            <div class="sound-navigation"><button id="prevPreset" aria-label="Föregående klang" title="Vänsterpil">←</button><button id="nextPreset" aria-label="Nästa klang" title="Högerpil">→</button><span>HITTA DIN KLANG</span></div>
+          </div>
+          <div class="signal-display">
+            <div class="signal-heading"><span><span class="signal-dot"></span>LIVE SIGNAL</span><span id="noteReadout">D · MINOR PENT.</span></div>
+            <canvas id="visualizer" aria-label="Ljudets vågform" role="img"></canvas>
+            <div class="signal-footer"><span id="voiceStatus">TYSTNAD ÄR OCKSÅ MUSIK</span><div id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>POLY / 48</span></div>
+          </div>
+        </div>
+        <div class="preset-bank" id="presetBank" aria-label="Välj klang"></div>
+        <div class="keyboard-section">
+          <div class="keyboard-heading"><span><b>DITT TANGENTBORD ÄR INSTRUMENTET.</b> Börja med ett ackord på A.</span><label class="layout-control"><span>LAYOUT</span><select id="layout" aria-label="Tangentbordslayout"><option value="auto">Auto</option><option value="qwerty">QWERTY</option><option value="qwertz">QWERTZ</option><option value="swedish">Svenskt</option></select></label></div>
+          <div id="keyboard" class="keyboard" aria-label="Spelbara tangenter"></div>
+          <div class="performance-keys">
+            <div class="octave-control"><button id="octaveDown" aria-label="En oktav ned">↓</button><span>OKTAV <b id="octaveValue">4</b></span><button id="octaveUp" aria-label="En oktav upp">↑</button></div>
+            <button id="sustain" class="spacebar" aria-pressed="false"><kbd>space</kbd><span>SUSTAIN</span><span class="pedal-light"></span></button>
+            <button id="expression" class="expression" aria-pressed="false"><kbd>shift</kbd><span>LYFT KLANGEN</span></button>
+          </div>
+        </div>
+        <div class="bottom-panels">
+          <section class="motion-panel" aria-label="Arpeggiator">
+            <div class="panel-heading"><span>01 / RÖRELSE</span><button id="arp" class="toggle" aria-pressed="false"><kbd>1</kbd>ARP<span class="switch-light"></span></button></div>
+            <div class="tempo-row"><label><input id="bpm" aria-label="Tempo i BPM" type="number" min="45" max="180" value="96" inputmode="numeric"><span>BPM</span></label><button id="tap" class="small-button" title="Klicka i takt för att sätta tempo">TAP</button><select id="division" aria-label="Notdelning"><option value="1">1/4</option><option value="0.5" selected>1/8</option><option value="0.25">1/16</option></select></div>
+            <details id="arpDetails"><summary>Mönster & känsla<span>＋</span></summary><div class="arp-options"><select id="pattern" aria-label="Arpeggiomönster"><option value="bounce">Upp & ned</option><option value="up">Upp</option><option value="down">Ned</option><option value="random">Slump</option></select><select id="arpOctaves" aria-label="Arpeggiooktaver"><option value="1">1 oktav</option><option value="2">2 oktaver</option></select><label>GATE<input id="gate" type="range" min="25" max="95" value="72" aria-label="Arpeggions tonlängd"></label></div></details>
+            <p class="panel-hint" id="arpHint">Ge ackorden puls. Spela melodi ovanpå.</p>
+          </section>
+          <section class="loop-panel" aria-label="Fraslooper">
+            <div class="panel-heading"><span>02 / FÅNGA EN IDÉ</span><span id="loopBadge">UPP TILL 8 TAKTER</span></div>
+            <div class="loop-buttons"><button id="record" aria-label="Spela in en ny loop"><span class="record-dot"></span><span id="recordLabel">Spela in</span><kbd>2</kbd></button><button id="playLoop" disabled aria-label="Spela eller pausa loopen"><span id="playIcon">▶</span><kbd>3</kbd></button><button id="clearLoop" disabled aria-label="Radera loopen"><span>×</span><kbd>4</kbd></button></div>
+            <div class="loop-track" id="loopTrack" role="progressbar" aria-label="Loopens position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="loopProgress"></span><div></div></div>
+            <p class="panel-hint" id="loopHint">Spela in → avsluta → spela ovanpå.</p>
+          </section>
+          <section class="character-panel" aria-label="Ljudets karaktär"><div class="panel-heading"><span>03 / SÄTT DIN PRÄGEL</span><span>LESS IS MORE</span></div><label class="macro"><span>KLANG<small>Mörk ↔ ljus</small></span><input id="tone" type="range" min="0" max="100" value="48" aria-label="Klangfärg"></label><label class="macro"><span>RYMD<small>Nära ↔ svävande</small></span><input id="space" type="range" min="0" max="100" value="48" aria-label="Rymd och effekter"></label></section>
+        </div>
+      </section>
+      <footer class="footer"><span><i></i> BYGGD FÖR ATT SPELAS. INTE STÄLLAS IN.</span><button id="helpButton" aria-expanded="false" aria-controls="help">De få sakerna att veta <span>↗</span></button></footer>
+      <div id="help" class="help" hidden><p><b>Q–P</b> spelar melodi. <b>A–L</b> spelar skalanpassade ackord. <b>Z–M</b> spelar en egen, stadig bas. Tangenterna följer de fysiska positionerna, också på QWERTZ. I Chromatic-läge tillkommer två tangenter till höger om P, så att alla tolv halvtoner kan spelas.</p><p>Håll <b>Space</b> som en pedal, eller klicka på den för att låsa sustain. Håll <b>Shift</b> för ljusare klang. <b>← →</b> byter ljud, <b>↑ ↓</b> byter oktav. <b>Esc</b> tystar verkligen allt.</p><p><b>1</b> ger ackordraden arpeggio. <b>2</b> armerar inspelning; första tonen startar, och nästa tryck avslutar till en hel takt. <b>3</b> pausar/spelar loopen. <b>4</b> raderar den. Loopen minns toner och ljud, även om du byter skala. Max åtta takter; ingen överdubbning.</p><p>Allt ljud skapas här i webbläsaren. När fliken tappar fokus tystas instrumentet och loopen pausas. Vissa tangentbord kan inte registrera alla samtidiga tangenter; ackordraden hjälper dig runt det.</p></div>
+    </main>
+  </div>
+  <div id="entry" class="entry" role="dialog" aria-modal="true" aria-labelledby="entryTitle"><div class="entry-card"><div class="entry-orbit" aria-hidden="true"><span></span><i></i></div><span class="eyebrow">INGA FÖRKUNSKAPER. BARA NYFIKENHET.</span><h2 id="entryTitle">Du har redan<br>ett instrument.</h2><p>Det ligger under dina händer.</p><button id="enter">Kliv in i ORBIT <span>↗</span></button><span class="entry-hint" id="entryHint">Klicka, tryck Enter eller spela en bokstav.</span><small>Börja med låg volym. Hörlurar gör rymden rättvisa.</small></div></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">ORBIT behöver JavaScript för att skapa ljud. Aktivera det och ladda om sidan.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,72 @@
+name: ORBIT instrument tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browsers:
+    name: Play and render / ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit, chrome, msedge]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r tests/requirements.txt
+      - run: python -m playwright install --with-deps ${{ matrix.browser }}
+      - run: python tests/browser.py --browser ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orbit-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+  live:
+    name: Published GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: browsers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r tests/requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - name: Wait for the deployed source, not a cached older page
+        run: |
+          python - <<'PY'
+          import time, urllib.request
+          from pathlib import Path
+          expected = Path('src/music.js').read_bytes()
+          for attempt in range(30):
+              try:
+                  request = urllib.request.Request('https://capstere.github.io/misc/src/music.js?verify=${{ github.sha }}', headers={'Cache-Control':'no-cache'})
+                  if urllib.request.urlopen(request, timeout=15).read() == expected:
+                      break
+              except Exception:
+                  pass
+              time.sleep(5)
+          else:
+              raise SystemExit('The current commit was not served by Pages in time')
+          PY
+      - run: python tests/browser.py --browser chromium --base-url https://capstere.github.io/misc/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orbit-live-pages
+          path: test-results/
+          retention-days: 7
